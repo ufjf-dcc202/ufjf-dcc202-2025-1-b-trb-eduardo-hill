@@ -1,0 +1,21 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  width: 600px;
+  height: 600px;
+  gap: 1px;
+
+  border: 3px solid #8b4513;
+}
+
+.soil {
+  background: #af7026;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.soil:hover {
+  background-color: #8b4513;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
