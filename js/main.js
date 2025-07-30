@@ -4,7 +4,7 @@ function generateInitialGrid() {
 
   for (let i = 0; i < 144; i++) {
     const random = Math.random()
-    if (random < 0.3) {
+    if (random < 0.1) {
       grid[i] = 'weed'
     } else {
       grid[i] = 'rock'
