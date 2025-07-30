@@ -10,35 +10,77 @@
   <body>
     <!-- Contador de dias e loja de sementes -->
     <header>
-      <h1>Dia 1</h1>
-      <button>
+      <div>
+        <h1 id="day-counter">Dia 1</h1>
+        <div id="money-display">
+          <img src="./assets/images/Gold.png" alt="" /> $<span
+            id="current-money"
+            >100</span
+          >
+        </div>
+      </div>
+      <button id="seed-shop-button">
         <img src="./assets/images/Shopping-Cart.png" alt="" />
       </button>
     </header>
 
-    <!-- Conteudo do game  -->
-    <main>
-      <!-- Casa Principal -->
-      <img src="#" alt="" />
+    <div id="message-display"></div>
 
+    <!-- Conteudo do game  -->
+    <main id="game-content">
       <!-- Grid do jogo -->
       <div id="game-grid" class="grid-container"></div>
     </main>
 
     <!-- Inventario do player -->
     <footer>
-      <div id="inventory-slot-1" data-seed="seed1">
-        <img src="./assets/images/Carrot.png" alt="" />
-        <p>0</p>
-      </div>
-      <div id="inventory-slot-2" data-seed="seed2">
-        <img src="./assets/images/Corn.png" alt="" />
-        <p>0</p>
-      </div>
-      <div id="inventory-slot-3" data-seed="seed3">
-        <img src="./assets/images/Tomato.png" alt="" />
-        <p>0</p>
+      <div id="seed-inventory">
+        <div id="inventory-slot-1" data-seed="seed1">
+          <img src="./assets/images/Carrot.png" alt="" />
+          <p id="count-seed1">0</p>
+        </div>
+        <div id="inventory-slot-2" data-seed="seed2">
+          <img src="./assets/images/Corn.png" alt="" />
+          <p id="count-seed2">0</p>
+        </div>
+        <div id="inventory-slot-3" data-seed="seed3">
+          <img src="./assets/images/Tomato.png" alt="" />
+          <p id="count-seed3">0</p>
+        </div>
+        <div id="game-controls">
+          <button id="advance-day">
+            Proximo Dia <img src="./assets/images/Arrow.png" alt="" />
+          </button>
+        </div>
       </div>
     </footer>
+
+    <!-- Modal da loja de sementes -->
+    <div id="shop-modal">
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <header>
+          <h2>Loja de Sementes</h2>
+          <button id="close-shop-modal">X</button>
+        </header>
+        <div>
+          <div class="seed-item" data-seed="seed1">
+            <img src="./assets/images/Carrot.png" alt="" />
+            <p>Cenoura - $10</p>
+            <button class="buy-seed1-button">Comprar</button>
+          </div>
+          <div class="seed-item" data-seed="seed2">
+            <img src="./assets/images/Corn.png" alt="" />
+            <p>Milho - $15</p>
+            <button class="buy-seed2-button">Comprar</button>
+          </div>
+          <div class="seed-item" data-seed="seed3">
+            <img src="./assets/images/Tomato.png" alt="" />
+            <p>Tomate - $20</p>
+            <button class="buy-seed3-button">Comprar</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
