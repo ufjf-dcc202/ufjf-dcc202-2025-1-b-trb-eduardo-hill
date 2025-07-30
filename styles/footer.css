@@ -1,0 +1,37 @@
+footer {
+  display: flex;
+  width: 400px;
+  border: 2px solid #000;
+  border-radius: 8px;
+}
+
+#seed-inventory {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#seed-inventory div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+#seed-inventory img {
+  height: 50px;
+  width: 50px;
+  object-fit: cover;
+}
+
+#seed-inventory button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: large;
+}
