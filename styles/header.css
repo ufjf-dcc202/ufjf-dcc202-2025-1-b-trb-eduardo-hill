@@ -35,6 +35,23 @@ header h1 {
   color: gold;
 }
 
+#energy-display {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+#energy-display img {
+  width: 40px;
+  height: 40px;
+}
+
+#energy-display span {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: gold;
+}
+
 #seed-shop-button {
   background: none;
   border: none;
