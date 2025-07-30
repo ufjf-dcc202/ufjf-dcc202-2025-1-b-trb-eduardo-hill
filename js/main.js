@@ -61,12 +61,17 @@ function updateCellVisual(index) {
   cell.className = `cell ${cellType}`
 }
 
-function showMessage(text) {
-  const messageDisplay = document.getElementById('message-display')
-  messageDisplay.textContent = text
+const seedShopBtn = document.getElementById('seed-shop-button')
+seedShopBtn.addEventListener('click', () => {
+  const modal = document.getElementById('shop-modal')
+  modal.style.display = 'block'
+})
 
-  // Limpar mensagem após 2 segundos
-}
+const seedShopCloseBtn = document.getElementById('close-shop-modal')
+seedShopCloseBtn.addEventListener('click', () => {
+  const modal = document.getElementById('shop-modal')
+  modal.style.display = 'none'
+})
 
 document.addEventListener('DOMContentLoaded', function () {
   createGrid()

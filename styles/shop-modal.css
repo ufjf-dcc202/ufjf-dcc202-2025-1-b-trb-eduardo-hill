@@ -1,10 +1,11 @@
 #shop-modal {
-  display: flex;
+  display: none;
   border-radius: 8px;
   padding: 0.625rem;
   width: 500px;
   background-color: white;
   border: 1px solid #ccc;
+  position: absolute;
 }
 
 .modal-content {
