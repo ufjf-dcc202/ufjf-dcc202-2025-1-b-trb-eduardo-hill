@@ -1,6 +1,6 @@
 footer {
   display: flex;
-  width: 400px;
+  width: 500px;
   border: 2px solid #000;
   border-radius: 8px;
 }
@@ -33,5 +33,6 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: large;
+  font-size: small;
+  font-family: 'Press Start 2P', 'Courier New';
 }

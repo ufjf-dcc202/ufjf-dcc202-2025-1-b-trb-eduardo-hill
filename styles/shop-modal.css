@@ -2,7 +2,7 @@
   display: flex;
   border-radius: 8px;
   padding: 0.625rem;
-  width: 400px;
+  width: 500px;
   background-color: white;
   border: 1px solid #ccc;
 }
@@ -49,4 +49,15 @@
 .seed-item img {
   width: 32px;
   height: 32px;
+}
+
+.buy-seed1-button,
+.buy-seed2-button,
+.buy-seed3-button {
+  background: none;
+  border: 1px solid #007bff;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 8px;
+  font-family: 'Press Start 2P', 'Courier New';
 }
