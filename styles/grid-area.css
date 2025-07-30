@@ -2,11 +2,57 @@
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: repeat(12, 1fr);
-  width: 600px;
-  height: 600px;
+  width: 500px;
+  height: 500px;
   gap: 1px;
 
   border: 3px solid #8b4513;
+}
+
+.cell {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.cell.empty {
+  background: #af7026;
+}
+
+.cell.empty:hover {
+  background-color: #8b4513;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.cell.rock {
+  background: #666;
+  color: white;
+}
+
+.cell.rock:before {
+  content: '🪨';
+}
+
+.cell.rock:hover {
+  background: #555;
+  transform: scale(1.1);
+}
+
+.cell.weed {
+  background: #4a7c59;
+  color: white;
+}
+
+.cell.weed:before {
+  content: '🌿';
+}
+
+.cell.weed:hover {
+  background: #3d6b4a;
+  transform: scale(1.1);
 }
 
 .soil {
