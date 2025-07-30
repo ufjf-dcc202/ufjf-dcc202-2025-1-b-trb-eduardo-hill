@@ -1,0 +1,52 @@
+#shop-modal {
+  display: flex;
+  border-radius: 8px;
+  padding: 0.625rem;
+  width: 400px;
+  background-color: white;
+  border: 1px solid #ccc;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modal-content header {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 0%;
+  width: 100%;
+}
+
+.modal-content header h2 {
+  font-size: 18px;
+}
+
+.modal-content header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+#seed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.seed-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.seed-item img {
+  width: 32px;
+  height: 32px;
+}
