@@ -37,6 +37,21 @@ function createGrid() {
     cell.className = `cell ${gameState.grid[i]}`
     cell.dataset.index = i
 
+    // Adicionar imagem baseada no tipo da célula
+    if (gameState.grid[i] === 'weed') {
+      const img = document.createElement('img')
+      img.src = 'assets/images/Weed.png'
+      img.alt = 'Weed'
+      img.className = 'cell-image'
+      cell.appendChild(img)
+    } else if (gameState.grid[i] === 'rock') {
+      const img = document.createElement('img')
+      img.src = 'assets/images/Roock.png'
+      img.alt = 'Rock'
+      img.className = 'cell-image'
+      cell.appendChild(img)
+    }
+
     cell.addEventListener('click', function () {
       handleCellClick(i)
     })
@@ -66,6 +81,27 @@ function updateCellVisual(index) {
   const cellType = gameState.grid[index]
 
   cell.className = `cell ${cellType}`
+
+  // Remover imagem existente
+  const existingImg = cell.querySelector('img')
+  if (existingImg) {
+    existingImg.remove()
+  }
+
+  // Adicionar nova imagem se necessário
+  if (cellType === 'weed') {
+    const img = document.createElement('img')
+    img.src = 'assets/images/Weed.png'
+    img.alt = 'Weed'
+    img.className = 'cell-image'
+    cell.appendChild(img)
+  } else if (cellType === 'rock') {
+    const img = document.createElement('img')
+    img.src = 'assets/images/Roock.png'
+    img.alt = 'Rock'
+    img.className = 'cell-image'
+    cell.appendChild(img)
+  }
 }
 
 const seedShopBtn = document.getElementById('seed-shop-button')
