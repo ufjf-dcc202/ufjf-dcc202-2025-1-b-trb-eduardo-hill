@@ -2,6 +2,7 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="./assets/images/Corn.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stardew Valley</title>
     <link rel="stylesheet" href="./styles/styles.css" />
@@ -28,34 +29,36 @@
 
     <div id="message-display"></div>
 
-    <!-- Conteudo do game  -->
-    <main id="game-content">
-      <!-- Grid do jogo -->
-      <div id="game-grid" class="grid-container"></div>
-    </main>
+    <div class="content">
+      <!-- Conteudo do game  -->
+      <main id="game-content">
+        <!-- Grid do jogo -->
+        <div id="game-grid" class="grid-container"></div>
+      </main>
 
-    <!-- Inventario do player -->
-    <footer>
-      <div id="seed-inventory">
-        <div id="inventory-slot-1" data-seed="seed1">
-          <img src="./assets/images/Carrot.png" alt="" />
-          <p id="count-seed1">0</p>
+      <!-- Inventario do player -->
+      <aside>
+        <div id="seed-inventory">
+          <div id="inventory-slot-1" data-seed="seed1">
+            <img src="./assets/images/Carrot.png" alt="" />
+            <p id="count-seed1">0</p>
+          </div>
+          <div id="inventory-slot-2" data-seed="seed2">
+            <img src="./assets/images/Corn.png" alt="" />
+            <p id="count-seed2">0</p>
+          </div>
+          <div id="inventory-slot-3" data-seed="seed3">
+            <img src="./assets/images/Tomato.png" alt="" />
+            <p id="count-seed3">0</p>
+          </div>
+          <div id="game-controls">
+            <button id="advance-day">
+              Proximo Dia <img src="./assets/images/Arrow.png" alt="" />
+            </button>
+          </div>
         </div>
-        <div id="inventory-slot-2" data-seed="seed2">
-          <img src="./assets/images/Corn.png" alt="" />
-          <p id="count-seed2">0</p>
-        </div>
-        <div id="inventory-slot-3" data-seed="seed3">
-          <img src="./assets/images/Tomato.png" alt="" />
-          <p id="count-seed3">0</p>
-        </div>
-        <div id="game-controls">
-          <button id="advance-day">
-            Proximo Dia <img src="./assets/images/Arrow.png" alt="" />
-          </button>
-        </div>
-      </div>
-    </footer>
+      </aside>
+    </div>
 
     <!-- Modal da loja de sementes -->
     <div id="shop-modal">

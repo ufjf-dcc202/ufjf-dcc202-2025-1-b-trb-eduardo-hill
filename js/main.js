@@ -17,6 +17,7 @@ function generateInitialGrid() {
 const gameState = {
   currentDay: 1,
   currentMoney: 0,
+  currentEnergy: 50,
   grid: generateInitialGrid(),
   selectedSeed: null,
   inventory: {
@@ -47,11 +48,17 @@ function createGrid() {
 function handleCellClick(index) {
   const cellType = gameState.grid[index]
 
-  if (cellType === 'rock' || cellType === 'weed') {
-    // Limpar obstáculo
+  if (cellType === 'rock') {
+    gameState.currentEnergy = gameState.currentEnergy - 20
+    gameState.grid[index] = 'empty'
+    updateCellVisual(index)
+  } else if (cellType === 'weed') {
+    gameState.currentEnergy = gameState.currentEnergy - 10
     gameState.grid[index] = 'empty'
     updateCellVisual(index)
   }
+
+  console.log(gameState.currentEnergy)
 }
 
 function updateCellVisual(index) {
