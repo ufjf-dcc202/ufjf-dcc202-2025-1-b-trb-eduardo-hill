@@ -274,6 +274,18 @@ function updateUI() {
   document.getElementById('count-seed3').textContent = gameState.inventory.seed3
 }
 
+//Função para comprar sementes na loja
+function buySeed(seedType, cost, seedName) {
+  if (gameState.currentMoney >= cost) {
+    gameState.currentMoney -= cost
+    gameState.inventory[seedType]++
+    updateUI()
+    showMessage(`${seedName} comprada por $${cost}!`)
+  } else {
+    showMessage(`Dinheiro insuficiente! Precisa de $${cost}.`)
+  }
+}
+
 const seedShopBtn = document.getElementById('seed-shop-button')
 seedShopBtn.addEventListener('click', () => {
   const modal = document.getElementById('shop-modal')
@@ -306,5 +318,23 @@ document.addEventListener('DOMContentLoaded', function () {
         showMessage('Você não tem essa semente! Compre na loja.')
       }
     })
+  })
+
+  // Event listeners para compra de sementes
+  const buySeed1Btn = document.querySelector('.buy-seed1-button')
+  const buySeed2Btn = document.querySelector('.buy-seed2-button')
+  const buySeed3Btn = document.querySelector('.buy-seed3-button')
+
+  // Adicionando eventos de clique para os botões de compra de sementes
+  buySeed1Btn.addEventListener('click', () => {
+    buySeed('seed1', 10, 'Cenoura')
+  })
+
+  buySeed2Btn.addEventListener('click', () => {
+    buySeed('seed2', 15, 'Milho')
+  })
+
+  buySeed3Btn.addEventListener('click', () => {
+    buySeed('seed3', 20, 'Tomate')
   })
 })
