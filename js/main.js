@@ -92,6 +92,18 @@ function handleCellClick(index) {
     if (cellType === 'empty' || cellType === 'tilled') {
     }
   } else {
+    if (gameState.selectedSeed && cellType === 'tilled') {
+      if (gameState.inventory[gameState.selectedSeed] > 0) {
+        gameState.inventory[gameState.selectedSeed]--
+        gameState.grid[index] = `planted-${gameState.selectedSeed}`
+        updateCellVisual(index)
+
+        if (gameState.inventory[gameState.selectedSeed] === 0) {
+          gameState.selectedSeed = null
+          updateSeedVisuals()
+        }
+      }
+    }
   }
 
   updateUI()
@@ -122,12 +134,22 @@ function updateCellVisual(index) {
     img.alt = 'Rock'
     img.className = 'cell-image'
     cell.appendChild(img)
+  } else if (cellType.startsWith('planted-')) {
+    const img = document.createElement('img')
+    img.src = 'assets/images/Seed.png'
+    img.alt = 'Planted Seed'
+    img.className = 'cell-image'
+    cell.appendChild(img)
   }
 }
 
 //Funçao para seleçao de ferramenta
 function selectSeed(seedType) {
-  gameState.selectedSeed = seedType
+  if (gameState.selectedSeed === seedType) {
+    gameState.selectedSeed = null
+  } else {
+    gameState.selectedSeed = seedType
+  }
   updateSeedVisuals()
 }
 
@@ -147,7 +169,11 @@ function updateSeedVisuals() {
 }
 
 function selectTool(toolType) {
-  gameState.selectedTool = toolType
+  if (gameState.selectedTool === toolType) {
+    gameState.selectedTool = null
+  } else {
+    gameState.selectedTool = toolType
+  }
   updateToolVisuals()
 }
 
