@@ -336,15 +336,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Adicionando eventos de clique para os botões de compra de sementes
   buySeed1Btn.addEventListener('click', () => {
-    buySeed('seed1', 10, 'Cenoura')
+    buySeed('seed1', 20, 'Cenoura')
   })
 
   buySeed2Btn.addEventListener('click', () => {
-    buySeed('seed2', 15, 'Milho')
+    buySeed('seed2', 30, 'Milho')
   })
 
   buySeed3Btn.addEventListener('click', () => {
-    buySeed('seed3', 20, 'Tomate')
+    buySeed('seed3', 40, 'Tomate')
   })
 
   // Event listener para avanço de dia
