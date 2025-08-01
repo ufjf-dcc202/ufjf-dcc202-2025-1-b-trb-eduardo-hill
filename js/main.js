@@ -67,6 +67,7 @@ function handleCellClick(index) {
   const cellType = gameState.grid[index]
 
   if (gameState.currentEnergy <= 0) {
+    showMessage('Sem energia! Avance o dia para recuperar.')
     return
   }
 
@@ -75,21 +76,41 @@ function handleCellClick(index) {
       gameState.currentEnergy -= 20
       gameState.grid[index] = 'empty'
       updateCellVisual(index)
+      showMessage('Pedra removida!')
+    } else {
+      showMessage('Use a picareta apenas em pedras!')
     }
   } else if (gameState.selectedTool === 'garden-scissors') {
     if (cellType === 'weed') {
       gameState.currentEnergy -= 10
       gameState.grid[index] = 'empty'
       updateCellVisual(index)
+      showMessage('Erva daninha removida!')
+    } else {
+      showMessage('Use a tesoura apenas em ervas daninhas!')
     }
   } else if (gameState.selectedTool === 'hoe') {
     if (cellType === 'empty') {
       gameState.currentEnergy -= 5
       gameState.grid[index] = 'tilled'
       updateCellVisual(index)
+      showMessage('Solo preparado para plantio!')
+    } else if (cellType === 'rock') {
+      showMessage('Remova a pedra primeiro com a picareta!')
+    } else if (cellType === 'weed') {
+      showMessage('Remova a erva daninha primeiro com a tesoura!')
+    } else if (cellType === 'tilled') {
+      showMessage('Solo já está preparado!')
+    } else if (cellType.startsWith('planted-')) {
+      showMessage('Já há uma planta aqui!')
     }
   } else if (gameState.selectedTool === 'watering-can') {
     if (cellType === 'empty' || cellType === 'tilled') {
+      showMessage('Nada para regar aqui!')
+    } else if (cellType.startsWith('planted-')) {
+      showMessage('Planta regada! (sistema de rega em desenvolvimento)')
+    } else {
+      showMessage('Não é possível regar aqui!')
     }
   } else {
     if (gameState.selectedSeed && cellType === 'tilled') {
@@ -97,19 +118,27 @@ function handleCellClick(index) {
         gameState.inventory[gameState.selectedSeed]--
         gameState.grid[index] = `planted-${gameState.selectedSeed}`
         updateCellVisual(index)
+        showMessage('Semente plantada!')
 
         if (gameState.inventory[gameState.selectedSeed] === 0) {
           gameState.selectedSeed = null
           updateSeedVisuals()
+          showMessage('Sementes esgotadas! Compre mais na loja.')
         }
+      } else {
+        showMessage('Você não tem essa semente!')
       }
+    } else if (gameState.selectedSeed && cellType !== 'tilled') {
+      showMessage('Prepare o solo com a enxada primeiro!')
+    } else if (!gameState.selectedSeed && !gameState.selectedTool) {
+      showMessage('Selecione uma ferramenta ou semente!')
+    } else if (cellType.startsWith('planted-')) {
+      showMessage('Já há uma planta aqui!')
     }
   }
 
   updateUI()
-}
-
-//Funçao para mudar o vizual de cada cell de acordo com seu estado
+} //Funçao para mudar o vizual de cada cell de acordo com seu estado
 
 function updateCellVisual(index) {
   const cell = document.querySelector(`[data-index="${index}"]`)
@@ -143,12 +172,23 @@ function updateCellVisual(index) {
   }
 }
 
-//Funçao para seleçao de ferramenta
+function showMessage(text) {
+  const messageDisplay = document.getElementById('message-display')
+  messageDisplay.textContent = text
+
+  setTimeout(() => {
+    messageDisplay.textContent = ''
+  }, 3000)
+}
+
 function selectSeed(seedType) {
   if (gameState.selectedSeed === seedType) {
     gameState.selectedSeed = null
+    showMessage('Semente desselecionada')
   } else {
     gameState.selectedSeed = seedType
+    const seedNames = { seed1: 'Cenoura', seed2: 'Milho', seed3: 'Tomate' }
+    showMessage(`${seedNames[seedType]} selecionada`)
   }
   updateSeedVisuals()
 }
@@ -171,8 +211,16 @@ function updateSeedVisuals() {
 function selectTool(toolType) {
   if (gameState.selectedTool === toolType) {
     gameState.selectedTool = null
+    showMessage('Ferramenta desselecionada')
   } else {
     gameState.selectedTool = toolType
+    const toolNames = {
+      hoe: 'Enxada',
+      pickax: 'Picareta',
+      'garden-scissors': 'Tesoura',
+      'watering-can': 'Regador',
+    }
+    showMessage(`${toolNames[toolType]} selecionada`)
   }
   updateToolVisuals()
 }
@@ -242,6 +290,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const seedType = this.dataset.seed
       if (gameState.inventory[seedType] > 0) {
         selectSeed(seedType)
+      } else {
+        showMessage('Você não tem essa semente! Compre na loja.')
       }
     })
   })
