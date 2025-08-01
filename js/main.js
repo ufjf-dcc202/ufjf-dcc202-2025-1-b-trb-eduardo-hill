@@ -286,6 +286,15 @@ function buySeed(seedType, cost, seedName) {
   }
 }
 
+//Função para avançar um dia
+function advanceDay() {
+  gameState.currentDay++
+  gameState.currentEnergy = 50
+  
+  updateUI()
+  showMessage(`Dia ${gameState.currentDay} começou! Energia recuperada.`)
+}
+
 const seedShopBtn = document.getElementById('seed-shop-button')
 seedShopBtn.addEventListener('click', () => {
   const modal = document.getElementById('shop-modal')
@@ -336,5 +345,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   buySeed3Btn.addEventListener('click', () => {
     buySeed('seed3', 20, 'Tomate')
+  })
+
+  // Event listener para avanço de dia
+  const advanceDayBtn = document.getElementById('advance-day')
+  advanceDayBtn.addEventListener('click', () => {
+    advanceDay()
   })
 })
