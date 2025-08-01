@@ -1,4 +1,5 @@
-/* Função para gerar o grid inicial */
+//Gerando Grid inicial plantas e pedras
+
 function generateInitialGrid() {
   const grid = new Array(144)
 
@@ -13,12 +14,14 @@ function generateInitialGrid() {
   return grid
 }
 
-/* Estado inicial do jogo */
+//Estado inicial do jogo
+
 const gameState = {
   currentDay: 1,
-  currentMoney: 0,
+  currentMoney: 100,
   currentEnergy: 50,
   grid: generateInitialGrid(),
+  selectedTool: null,
   selectedSeed: null,
   inventory: {
     seed1: 1,
@@ -27,7 +30,7 @@ const gameState = {
   },
 }
 
-/* Função para criar o grid */
+//Função para criar o grid 12x12
 function createGrid() {
   const container = document.getElementById('game-grid')
   container.innerHTML = ''
@@ -37,7 +40,6 @@ function createGrid() {
     cell.className = `cell ${gameState.grid[i]}`
     cell.dataset.index = i
 
-    // Adicionar imagem baseada no tipo da célula
     if (gameState.grid[i] === 'weed') {
       const img = document.createElement('img')
       img.src = 'assets/images/Weed.png'
@@ -60,21 +62,38 @@ function createGrid() {
   }
 }
 
+//Função para mudança de estado de cada cell, retirada de pedra, planta, preparo do solo, etc
 function handleCellClick(index) {
   const cellType = gameState.grid[index]
 
-  if (cellType === 'rock') {
-    gameState.currentEnergy = gameState.currentEnergy - 20
-    gameState.grid[index] = 'empty'
-    updateCellVisual(index)
-  } else if (cellType === 'weed') {
-    gameState.currentEnergy = gameState.currentEnergy - 10
-    gameState.grid[index] = 'empty'
-    updateCellVisual(index)
+  if (gameState.currentEnergy <= 0) {
+    return
   }
 
-  console.log(gameState.currentEnergy)
+  if (gameState.selectedTool === 'hoe') {
+    if (cellType === 'rock') {
+      gameState.currentEnergy -= 20
+      gameState.grid[index] = 'empty'
+      updateCellVisual(index)
+    } else if (cellType === 'weed') {
+      gameState.currentEnergy -= 10
+      gameState.grid[index] = 'empty'
+      updateCellVisual(index)
+    } else if (cellType === 'empty') {
+      gameState.currentEnergy -= 5
+      gameState.grid[index] = 'tilled'
+      updateCellVisual(index)
+    }
+  } else if (gameState.selectedTool === 'watering-can') {
+    if (cellType === 'empty' || cellType === 'tilled') {
+    }
+  } else {
+  }
+
+  updateUI()
 }
+
+//Funçao para mudar o vizual de cada cell de acordo com seu estado
 
 function updateCellVisual(index) {
   const cell = document.querySelector(`[data-index="${index}"]`)
@@ -82,13 +101,11 @@ function updateCellVisual(index) {
 
   cell.className = `cell ${cellType}`
 
-  // Remover imagem existente
   const existingImg = cell.querySelector('img')
   if (existingImg) {
     existingImg.remove()
   }
 
-  // Adicionar nova imagem se necessário
   if (cellType === 'weed') {
     const img = document.createElement('img')
     img.src = 'assets/images/Weed.png'
@@ -101,6 +118,45 @@ function updateCellVisual(index) {
     img.alt = 'Rock'
     img.className = 'cell-image'
     cell.appendChild(img)
+  }
+}
+
+//Funçao para seleçao de ferramenta
+function selectTool(toolType) {
+  gameState.selectedTool = toolType
+  updateToolVisuals()
+}
+
+function updateToolVisuals() {
+  document.querySelectorAll('[data-tool]').forEach((tool) => {
+    tool.classList.remove('selected')
+  })
+
+  if (gameState.selectedTool) {
+    const selectedTool = document.querySelector(
+      `[data-tool="${gameState.selectedTool}"]`
+    )
+    if (selectedTool) {
+      selectedTool.classList.add('selected')
+    }
+  }
+}
+
+//Funçao para dar update no hud do jogador. Dinheiro, energia e dias
+function updateUI() {
+  const energyDisplay = document.querySelector('#energy-display span')
+  if (energyDisplay) {
+    energyDisplay.textContent = gameState.currentEnergy
+  }
+
+  const moneyDisplay = document.querySelector('#current-money')
+  if (moneyDisplay) {
+    moneyDisplay.textContent = gameState.currentMoney
+  }
+
+  const dayDisplay = document.querySelector('#current-day')
+  if (dayDisplay) {
+    dayDisplay.textContent = gameState.currentDay
   }
 }
 
@@ -118,4 +174,12 @@ seedShopCloseBtn.addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', function () {
   createGrid()
+  updateUI()
+
+  document.querySelectorAll('[data-tool]').forEach((toolSlot) => {
+    toolSlot.addEventListener('click', function () {
+      const toolType = this.dataset.tool
+      selectTool(toolType)
+    })
+  })
 })
