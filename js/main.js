@@ -28,6 +28,26 @@ const gameState = {
     seed2: 0,
     seed3: 0,
   },
+  plantedSeeds: {},
+}
+
+// Configurações de crescimento das plantas (em minutos)
+const PLANT_GROWTH_CONFIG = {
+  seed1: {
+    stageTime: 5 * 1000,
+    stages: ['Seed.png', 'CarrotMidlle.png', 'CarrotFull.png'],
+    name: 'Cenoura',
+  },
+  seed2: {
+    stageTime: 8 * 1000,
+    stages: ['Seed.png', 'MidlleSeed.png', 'CornFull.png'],
+    name: 'Milho',
+  },
+  seed3: {
+    stageTime: 10 * 1000,
+    stages: ['Seed.png', 'MidlleSeed.png', 'TomatoFull.png'],
+    name: 'Tomate',
+  },
 }
 
 //Função para criar o grid 12x12
@@ -129,6 +149,14 @@ function handleCellClick(index) {
       if (gameState.inventory[gameState.selectedSeed] > 0) {
         gameState.inventory[gameState.selectedSeed]--
         gameState.grid[index] = `planted-${gameState.selectedSeed}`
+
+        // Registra o tempo de plantio
+        gameState.plantedSeeds[index] = {
+          seedType: gameState.selectedSeed,
+          plantedAt: Date.now(),
+          currentStage: 0,
+        }
+
         updateCellVisual(index)
         showMessage('Semente plantada!')
 
@@ -143,14 +171,38 @@ function handleCellClick(index) {
     } else if (gameState.selectedSeed && cellType !== 'tilled') {
       showMessage('Prepare o solo com a enxada primeiro!')
     } else if (!gameState.selectedSeed && !gameState.selectedTool) {
-      showMessage('Selecione uma ferramenta ou semente!')
+      if (cellType.startsWith('planted-')) {
+        const plantInfo = gameState.plantedSeeds[index]
+        if (
+          plantInfo &&
+          plantInfo.currentStage ===
+            PLANT_GROWTH_CONFIG[plantInfo.seedType].stages.length - 1
+        ) {
+          harvestPlant(index)
+        } else {
+          showMessage('Planta ainda não está madura para colheita!')
+        }
+      } else {
+        showMessage('Selecione uma ferramenta ou semente!')
+      }
     } else if (cellType.startsWith('planted-')) {
-      showMessage('Já há uma planta aqui!')
+      const plantInfo = gameState.plantedSeeds[index]
+      if (
+        plantInfo &&
+        plantInfo.currentStage ===
+          PLANT_GROWTH_CONFIG[plantInfo.seedType].stages.length - 1
+      ) {
+        showMessage(
+          'Planta madura! Clique sem ferramenta selecionada para colher.'
+        )
+      } else {
+        showMessage('Já há uma planta aqui!')
+      }
     }
   }
 
   updateUI()
-} //Funçao para mudar o vizual de cada cell de acordo com seu estado
+}
 
 function updateCellVisual(index) {
   const cell = document.querySelector(`[data-index="${index}"]`)
@@ -177,7 +229,16 @@ function updateCellVisual(index) {
     cell.appendChild(img)
   } else if (cellType.startsWith('planted-')) {
     const img = document.createElement('img')
-    img.src = 'assets/images/Seed.png'
+
+    const plantInfo = gameState.plantedSeeds[index]
+    if (plantInfo) {
+      const config = PLANT_GROWTH_CONFIG[plantInfo.seedType]
+      const stageImage = config.stages[plantInfo.currentStage]
+      img.src = `assets/images/${stageImage}`
+    } else {
+      img.src = 'assets/images/Seed.png'
+    }
+
     img.alt = 'Planted Seed'
     img.className = 'cell-image'
     cell.appendChild(img)
@@ -191,6 +252,73 @@ function showMessage(text) {
   setTimeout(() => {
     messageDisplay.textContent = ''
   }, 3000)
+}
+
+// Sistema de crescimento das plantas
+function checkPlantGrowth() {
+  const currentTime = Date.now()
+  let plantsUpdated = false
+
+  // Verifica cada planta no jogo
+  Object.keys(gameState.plantedSeeds).forEach((index) => {
+    const plantInfo = gameState.plantedSeeds[index]
+    const config = PLANT_GROWTH_CONFIG[plantInfo.seedType]
+
+    // Calcula quanto tempo passou desde o plantio
+    const timePassed = currentTime - plantInfo.plantedAt
+
+    // Calcula qual estágio a planta deveria estar
+    const expectedStage = Math.min(
+      Math.floor(timePassed / config.stageTime),
+      config.stages.length - 1
+    )
+
+    if (expectedStage > plantInfo.currentStage) {
+      plantInfo.currentStage = expectedStage
+      updateCellVisual(parseInt(index))
+      plantsUpdated = true
+
+      if (expectedStage === config.stages.length - 1) {
+        showMessage(`${config.name} está pronta para colheita!`)
+      }
+    }
+  })
+
+  return plantsUpdated
+}
+
+// Função que roda a cada segundo para verificar crescimento
+function startPlantGrowthTimer() {
+  setInterval(() => {
+    checkPlantGrowth()
+  }, 1000)
+}
+
+// Função para colher plantas maduras
+function harvestPlant(index) {
+  const plantInfo = gameState.plantedSeeds[index]
+  if (!plantInfo) return
+
+  const config = PLANT_GROWTH_CONFIG[plantInfo.seedType]
+
+  // Valores de venda baseados no tipo de semente
+  const sellPrices = {
+    seed1: 35,
+    seed2: 50,
+    seed3: 70,
+  }
+
+  const sellPrice = sellPrices[plantInfo.seedType]
+
+  gameState.currentMoney += sellPrice
+
+  gameState.grid[index] = 'tilled'
+  delete gameState.plantedSeeds[index]
+
+  updateCellVisual(index)
+  updateUI()
+
+  showMessage(`${config.name} colhida! +$${sellPrice}`)
 }
 
 function selectSeed(seedType) {
@@ -310,6 +438,7 @@ seedShopCloseBtn.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', function () {
   createGrid()
   updateUI()
+  startPlantGrowthTimer() // Inicia o sistema de crescimento
 
   document.querySelectorAll('[data-tool]').forEach((toolSlot) => {
     toolSlot.addEventListener('click', function () {
