@@ -21,4 +21,24 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  padding: 5px;
+  transition: all 0.3s ease;
+}
+
+/* Estilo para ferramenta selecionada */
+#tools-inventory-slot-1.selected,
+#tools-inventory-slot-2.selected {
+  border-color: #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
+  transform: scale(1.05);
+}
+
+/* Hover effect */
+#tools-inventory-slot-1:hover,
+#tools-inventory-slot-2:hover {
+  border-color: #ccc;
+  background-color: rgba(0, 0, 0, 0.05);
 }
