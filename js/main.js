@@ -70,16 +70,20 @@ function handleCellClick(index) {
     return
   }
 
-  if (gameState.selectedTool === 'hoe') {
+  if (gameState.selectedTool === 'pickax') {
     if (cellType === 'rock') {
       gameState.currentEnergy -= 20
       gameState.grid[index] = 'empty'
       updateCellVisual(index)
-    } else if (cellType === 'weed') {
+    }
+  } else if (gameState.selectedTool === 'garden-scissors') {
+    if (cellType === 'weed') {
       gameState.currentEnergy -= 10
       gameState.grid[index] = 'empty'
       updateCellVisual(index)
-    } else if (cellType === 'empty') {
+    }
+  } else if (gameState.selectedTool === 'hoe') {
+    if (cellType === 'empty') {
       gameState.currentEnergy -= 5
       gameState.grid[index] = 'tilled'
       updateCellVisual(index)
