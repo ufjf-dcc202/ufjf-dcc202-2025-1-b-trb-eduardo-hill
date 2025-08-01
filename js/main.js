@@ -73,28 +73,40 @@ function handleCellClick(index) {
 
   if (gameState.selectedTool === 'pickax') {
     if (cellType === 'rock') {
-      gameState.currentEnergy -= 20
-      gameState.grid[index] = 'empty'
-      updateCellVisual(index)
-      showMessage('Pedra removida!')
+      if (gameState.currentEnergy >= 20) {
+        gameState.currentEnergy -= 20
+        gameState.grid[index] = 'empty'
+        updateCellVisual(index)
+        showMessage('Pedra removida!')
+      } else {
+        showMessage('Energia insuficiente! Precisa de 20 energia.')
+      }
     } else {
       showMessage('Use a picareta apenas em pedras!')
     }
   } else if (gameState.selectedTool === 'garden-scissors') {
     if (cellType === 'weed') {
-      gameState.currentEnergy -= 10
-      gameState.grid[index] = 'empty'
-      updateCellVisual(index)
-      showMessage('Erva daninha removida!')
+      if (gameState.currentEnergy >= 10) {
+        gameState.currentEnergy -= 10
+        gameState.grid[index] = 'empty'
+        updateCellVisual(index)
+        showMessage('Erva daninha removida!')
+      } else {
+        showMessage('Energia insuficiente! Precisa de 10 energia.')
+      }
     } else {
       showMessage('Use a tesoura apenas em ervas daninhas!')
     }
   } else if (gameState.selectedTool === 'hoe') {
     if (cellType === 'empty') {
-      gameState.currentEnergy -= 5
-      gameState.grid[index] = 'tilled'
-      updateCellVisual(index)
-      showMessage('Solo preparado para plantio!')
+      if (gameState.currentEnergy >= 5) {
+        gameState.currentEnergy -= 5
+        gameState.grid[index] = 'tilled'
+        updateCellVisual(index)
+        showMessage('Solo preparado para plantio!')
+      } else {
+        showMessage('Energia insuficiente! Precisa de 5 energia.')
+      }
     } else if (cellType === 'rock') {
       showMessage('Remova a pedra primeiro com a picareta!')
     } else if (cellType === 'weed') {
