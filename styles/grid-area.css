@@ -67,6 +67,16 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
+/* Semente plantada */
+.cell[class*='planted-'] {
+  background: #6b4423;
+}
+
+.cell[class*='planted-']:hover {
+  background: #5a3a1d;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
 .soil {
   background: #af7026;
   cursor: pointer;
