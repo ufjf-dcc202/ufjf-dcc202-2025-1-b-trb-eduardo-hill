@@ -126,6 +126,26 @@ function updateCellVisual(index) {
 }
 
 //Funçao para seleçao de ferramenta
+function selectSeed(seedType) {
+  gameState.selectedSeed = seedType
+  updateSeedVisuals()
+}
+
+function updateSeedVisuals() {
+  document.querySelectorAll('[data-seed]').forEach((seed) => {
+    seed.classList.remove('selected')
+  })
+
+  if (gameState.selectedSeed) {
+    const selectedSeed = document.querySelector(
+      `[data-seed="${gameState.selectedSeed}"]`
+    )
+    if (selectedSeed) {
+      selectedSeed.classList.add('selected')
+    }
+  }
+}
+
 function selectTool(toolType) {
   gameState.selectedTool = toolType
   updateToolVisuals()
@@ -162,6 +182,10 @@ function updateUI() {
   if (dayDisplay) {
     dayDisplay.textContent = gameState.currentDay
   }
+
+  document.getElementById('count-seed1').textContent = gameState.inventory.seed1
+  document.getElementById('count-seed2').textContent = gameState.inventory.seed2
+  document.getElementById('count-seed3').textContent = gameState.inventory.seed3
 }
 
 const seedShopBtn = document.getElementById('seed-shop-button')
@@ -184,6 +208,15 @@ document.addEventListener('DOMContentLoaded', function () {
     toolSlot.addEventListener('click', function () {
       const toolType = this.dataset.tool
       selectTool(toolType)
+    })
+  })
+
+  document.querySelectorAll('[data-seed]').forEach((seedSlot) => {
+    seedSlot.addEventListener('click', function () {
+      const seedType = this.dataset.seed
+      if (gameState.inventory[seedType] > 0) {
+        selectSeed(seedType)
+      }
     })
   })
 })

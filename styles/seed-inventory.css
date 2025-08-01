@@ -19,6 +19,23 @@ aside {
   justify-content: center;
   align-items: center;
   padding: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+/* Estilo para semente selecionada */
+#seed-inventory div.selected {
+  border-color: #28a745;
+  background-color: rgba(40, 167, 69, 0.1);
+  transform: scale(1.05);
+}
+
+/* Hover effect */
+#seed-inventory div:hover {
+  border-color: #ccc;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 #seed-inventory img {
