@@ -312,7 +312,8 @@ function harvestPlant(index) {
 
   gameState.currentMoney += sellPrice
 
-  gameState.grid[index] = 'tilled'
+  // Remove a planta e volta para terra sem arar (empty)
+  gameState.grid[index] = 'empty'
   delete gameState.plantedSeeds[index]
 
   updateCellVisual(index)
