@@ -290,7 +290,7 @@ function buySeed(seedType, cost, seedName) {
 function advanceDay() {
   gameState.currentDay++
   gameState.currentEnergy = 50
-  
+
   updateUI()
   showMessage(`Dia ${gameState.currentDay} começou! Energia recuperada.`)
 }
