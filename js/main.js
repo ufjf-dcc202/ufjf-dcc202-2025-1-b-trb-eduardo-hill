@@ -164,13 +164,8 @@ function handleCellClick(index) {
       const plantInfo = gameState.plantedSeeds[index]
       if (plantInfo && !plantInfo.isDead) {
         if (!plantInfo.watered) {
-          if (gameState.currentEnergy >= 3) {
-            gameState.currentEnergy -= 3
-            plantInfo.watered = true
-            showMessage('Planta regada!')
-          } else {
-            showMessage('Energia insuficiente! Precisa de 3 energia.')
-          }
+          plantInfo.watered = true
+          showMessage('Planta regada!')
         } else {
           showMessage('Planta já foi regada neste estágio!')
         }
