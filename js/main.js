@@ -165,6 +165,8 @@ function handleCellClick(index) {
       if (plantInfo && !plantInfo.isDead) {
         if (!plantInfo.watered) {
           plantInfo.watered = true
+          // Define o tempo de início do próximo estágio apenas quando regada
+          plantInfo.nextStageStartTime = Date.now()
           showMessage('Planta regada!')
         } else {
           showMessage('Planta já foi regada neste estágio!')
@@ -192,6 +194,7 @@ function handleCellClick(index) {
           currentStage: 0,
           watered: false,
           isDead: false,
+          nextStageStartTime: Date.now(),
         }
 
         updateCellVisual(index)
@@ -325,20 +328,22 @@ function checkPlantGrowth() {
     if (plantInfo.isDead) return
 
     const config = PLANT_GROWTH_CONFIG[plantInfo.seedType]
-    const timePassed = currentTime - plantInfo.plantedAt
-    const expectedStage = Math.min(
-      Math.floor(timePassed / config.stageTime),
-      config.stages.length - 1
-    )
 
-    if (expectedStage > plantInfo.currentStage) {
-      if (plantInfo.watered) {
-        plantInfo.currentStage = expectedStage
-        plantInfo.watered = false
+    // Só verifica crescimento se a planta foi regada e ainda pode crescer
+    if (
+      plantInfo.watered &&
+      plantInfo.currentStage < config.stages.length - 1
+    ) {
+      const timeSinceStageStart = currentTime - plantInfo.nextStageStartTime
+
+      // Se passou tempo suficiente desde que foi regada, cresce para o próximo estágio
+      if (timeSinceStageStart >= config.stageTime) {
+        plantInfo.currentStage++
+        plantInfo.watered = false // Precisa regar novamente para o próximo estágio
         updateCellVisual(parseInt(index))
         plantsUpdated = true
 
-        if (expectedStage === config.stages.length - 1) {
+        if (plantInfo.currentStage === config.stages.length - 1) {
           showMessage(`${config.name} está pronta para colheita!`)
         } else {
           showMessage(`${config.name} cresceu! Regue para continuar crescendo.`)
