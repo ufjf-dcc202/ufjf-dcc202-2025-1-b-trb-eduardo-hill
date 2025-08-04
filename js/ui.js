@@ -6,7 +6,7 @@
 function updateUI() {
   const energyDisplay = document.querySelector('#energy-display span')
   if (energyDisplay) {
-    energyDisplay.textContent = gameState.currentEnergy
+    energyDisplay.textContent = `${gameState.currentEnergy}/${gameState.maxEnergy}`
   }
 
   const moneyDisplay = document.querySelector('#current-money')
@@ -36,6 +36,26 @@ function buySeed(seedType, cost, seedName) {
   }
 }
 
+// Processa compra de bateria
+function buyBattery() {
+  const batteryCost = SPECIAL_ITEMS.battery.price
+  const energyBoost = SPECIAL_ITEMS.battery.energyBoost
+
+  if (GameState.hasMoney(batteryCost)) {
+    GameState.spendMoney(batteryCost)
+
+    // Aumenta o limite máximo de energia permanentemente
+    GameState.increaseMaxEnergy(energyBoost)
+
+    updateUI()
+    showMessage(
+      `Bateria comprada! Limite máximo de energia aumentado para ${gameState.maxEnergy}!`
+    )
+  } else {
+    showMessage(`Dinheiro insuficiente! Precisa de $${batteryCost}.`)
+  }
+}
+
 // Configura event listeners para a loja
 function setupShopEventListeners() {
   const seedShopBtn = document.getElementById('seed-shop-button')
@@ -54,6 +74,7 @@ function setupShopEventListeners() {
   const buySeed1Btn = document.querySelector('.buy-seed1-button')
   const buySeed2Btn = document.querySelector('.buy-seed2-button')
   const buySeed3Btn = document.querySelector('.buy-seed3-button')
+  const buyBatteryBtn = document.querySelector('.buy-battery-button')
 
   buySeed1Btn.addEventListener('click', () => {
     buySeed('seed1', BUY_PRICES.seed1, SEED_NAMES.seed1)
@@ -65,5 +86,9 @@ function setupShopEventListeners() {
 
   buySeed3Btn.addEventListener('click', () => {
     buySeed('seed3', BUY_PRICES.seed3, SEED_NAMES.seed3)
+  })
+
+  buyBatteryBtn.addEventListener('click', () => {
+    buyBattery()
   })
 }

@@ -35,6 +35,15 @@ const BUY_PRICES = {
   seed3: 40,
 }
 
+// Preços de itens especiais
+const SPECIAL_ITEMS = {
+  battery: {
+    price: 1000,
+    energyBoost: 50,
+    name: 'Bateria de Energia',
+  },
+}
+
 // Custos de energia das ferramentas
 const ENERGY_COSTS = {
   pickax: 20,

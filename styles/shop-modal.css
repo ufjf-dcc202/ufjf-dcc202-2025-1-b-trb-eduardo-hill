@@ -55,11 +55,22 @@
 
 .buy-seed1-button,
 .buy-seed2-button,
-.buy-seed3-button {
+.buy-seed3-button,
+.buy-battery-button {
   background: none;
   border: 1px solid #007bff;
   cursor: pointer;
   padding: 5px;
   border-radius: 8px;
   font-family: 'Press Start 2P', 'Courier New';
+}
+
+.special-item {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+.special-item p {
+  color: #856404;
+  font-weight: bold;
 }

@@ -22,6 +22,7 @@ const gameState = {
   currentDay: 1,
   currentMoney: GAME_CONFIG.INITIAL_MONEY,
   currentEnergy: GAME_CONFIG.MAX_ENERGY,
+  maxEnergy: GAME_CONFIG.MAX_ENERGY, // Limite máximo atual de energia
   grid: generateInitialGrid(),
   selectedTool: null,
   selectedSeed: null,
@@ -62,7 +63,13 @@ const GameState = {
 
   // Restaura energia completamente
   restoreEnergy() {
-    gameState.currentEnergy = GAME_CONFIG.MAX_ENERGY
+    gameState.currentEnergy = gameState.maxEnergy
+  },
+
+  // Aumenta o limite máximo de energia
+  increaseMaxEnergy(amount) {
+    gameState.maxEnergy += amount
+    gameState.currentEnergy += amount // Também adiciona energia atual
   },
 
   // Avança um dia
