@@ -6,7 +6,12 @@
 function handleCellClick(index) {
   const cellType = gameState.grid[index]
 
-  if (gameState.currentEnergy <= 0) {
+  // Verifica energia apenas para ferramentas que consomem energia (não regador nem plantio)
+  if (
+    gameState.currentEnergy <= 0 &&
+    gameState.selectedTool &&
+    gameState.selectedTool !== 'watering-can'
+  ) {
     showMessage('Sem energia! Avance o dia para recuperar.')
     return
   }
@@ -15,11 +20,11 @@ function handleCellClick(index) {
   if (gameState.selectedTool) {
     handleToolAction(index, cellType)
   }
-  // Lógica de plantio
+  // Lógica de plantio (gratuito)
   else if (gameState.selectedSeed) {
     handleSeedPlanting(index, cellType)
   }
-  // Lógica de colheita (sem ferramenta/semente selecionada)
+  // Lógica de colheita (gratuito)
   else {
     handleHarvesting(index, cellType)
   }
