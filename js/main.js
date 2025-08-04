@@ -1,5 +1,4 @@
-//Gerando Grid inicial plantas e pedras
-
+// Gera grid inicial com pedras e ervas daninhas
 function generateInitialGrid() {
   const grid = new Array(144)
 
@@ -14,8 +13,7 @@ function generateInitialGrid() {
   return grid
 }
 
-//Estado inicial do jogo
-
+// Estado global do jogo
 const gameState = {
   currentDay: 1,
   currentMoney: 100,
@@ -31,7 +29,7 @@ const gameState = {
   plantedSeeds: {},
 }
 
-// Configurações de crescimento das plantas (em minutos)
+// Configurações de crescimento das plantas
 const PLANT_GROWTH_CONFIG = {
   seed1: {
     stageTime: 5 * 1000,
@@ -50,7 +48,7 @@ const PLANT_GROWTH_CONFIG = {
   },
 }
 
-//Função para criar o grid 12x12
+// Cria o grid visual 12x12 no DOM
 function createGrid() {
   const container = document.getElementById('game-grid')
   container.innerHTML = ''
@@ -62,13 +60,13 @@ function createGrid() {
 
     if (gameState.grid[i] === 'weed') {
       const img = document.createElement('img')
-      img.src = 'assets/images/Weed.png'
+      img.src = './assets/images/Weed.png'
       img.alt = 'Weed'
       img.className = 'cell-image'
       cell.appendChild(img)
     } else if (gameState.grid[i] === 'rock') {
       const img = document.createElement('img')
-      img.src = 'assets/images/Roock.png'
+      img.src = './assets/images/Roock.png'
       img.alt = 'Rock'
       img.className = 'cell-image'
       cell.appendChild(img)
@@ -82,7 +80,7 @@ function createGrid() {
   }
 }
 
-//Função para mudança de estado de cada cell, retirada de pedra, planta, preparo do solo, etc
+// Gerencia cliques nas células do grid - ferramentas, plantio e colheita
 function handleCellClick(index) {
   const cellType = gameState.grid[index]
 
@@ -127,6 +125,16 @@ function handleCellClick(index) {
       } else {
         showMessage('Energia insuficiente! Precisa de 5 energia.')
       }
+    } else if (cellType === 'dead-plant') {
+      if (gameState.currentEnergy >= 8) {
+        gameState.currentEnergy -= 8
+        gameState.grid[index] = 'tilled'
+        delete gameState.plantedSeeds[index] // Remove dados da planta morta
+        updateCellVisual(index)
+        showMessage('Planta morta removida e solo preparado!')
+      } else {
+        showMessage('Energia insuficiente! Precisa de 8 energia.')
+      }
     } else if (cellType === 'rock') {
       showMessage('Remova a pedra primeiro com a picareta!')
     } else if (cellType === 'weed') {
@@ -134,13 +142,45 @@ function handleCellClick(index) {
     } else if (cellType === 'tilled') {
       showMessage('Solo já está preparado!')
     } else if (cellType.startsWith('planted-')) {
-      showMessage('Já há uma planta aqui!')
+      const plantInfo = gameState.plantedSeeds[index]
+      if (plantInfo && plantInfo.isDead) {
+        if (gameState.currentEnergy >= 8) {
+          gameState.currentEnergy -= 8
+          gameState.grid[index] = 'tilled'
+          delete gameState.plantedSeeds[index]
+          updateCellVisual(index)
+          showMessage('Planta morta removida e solo preparado!')
+        } else {
+          showMessage('Energia insuficiente! Precisa de 8 energia.')
+        }
+      } else {
+        showMessage('Já há uma planta aqui!')
+      }
     }
   } else if (gameState.selectedTool === 'watering-can') {
     if (cellType === 'empty' || cellType === 'tilled') {
       showMessage('Nada para regar aqui!')
     } else if (cellType.startsWith('planted-')) {
-      showMessage('Planta regada! (sistema de rega em desenvolvimento)')
+      const plantInfo = gameState.plantedSeeds[index]
+      if (plantInfo && !plantInfo.isDead) {
+        if (!plantInfo.watered) {
+          if (gameState.currentEnergy >= 3) {
+            gameState.currentEnergy -= 3
+            plantInfo.watered = true
+            showMessage('Planta regada!')
+          } else {
+            showMessage('Energia insuficiente! Precisa de 3 energia.')
+          }
+        } else {
+          showMessage('Planta já foi regada neste estágio!')
+        }
+      } else if (plantInfo && plantInfo.isDead) {
+        showMessage('Planta morta! Use a enxada para remover.')
+      } else {
+        showMessage('Não é possível regar aqui!')
+      }
+    } else if (cellType === 'dead-plant') {
+      showMessage('Planta morta! Use a enxada para remover.')
     } else {
       showMessage('Não é possível regar aqui!')
     }
@@ -155,6 +195,8 @@ function handleCellClick(index) {
           seedType: gameState.selectedSeed,
           plantedAt: Date.now(),
           currentStage: 0,
+          watered: false,
+          isDead: false,
         }
 
         updateCellVisual(index)
@@ -173,7 +215,9 @@ function handleCellClick(index) {
     } else if (!gameState.selectedSeed && !gameState.selectedTool) {
       if (cellType.startsWith('planted-')) {
         const plantInfo = gameState.plantedSeeds[index]
-        if (
+        if (plantInfo && plantInfo.isDead) {
+          showMessage('Planta morta! Use a enxada para remover.')
+        } else if (
           plantInfo &&
           plantInfo.currentStage ===
             PLANT_GROWTH_CONFIG[plantInfo.seedType].stages.length - 1
@@ -182,21 +226,29 @@ function handleCellClick(index) {
         } else {
           showMessage('Planta ainda não está madura para colheita!')
         }
+      } else if (cellType === 'dead-plant') {
+        showMessage('Planta morta! Use a enxada para remover.')
       } else {
         showMessage('Selecione uma ferramenta ou semente!')
       }
-    } else if (cellType.startsWith('planted-')) {
-      const plantInfo = gameState.plantedSeeds[index]
-      if (
-        plantInfo &&
-        plantInfo.currentStage ===
-          PLANT_GROWTH_CONFIG[plantInfo.seedType].stages.length - 1
-      ) {
-        showMessage(
-          'Planta madura! Clique sem ferramenta selecionada para colher.'
-        )
+    } else if (cellType.startsWith('planted-') || cellType === 'dead-plant') {
+      if (cellType === 'dead-plant') {
+        showMessage('Planta morta! Use a enxada para remover.')
       } else {
-        showMessage('Já há uma planta aqui!')
+        const plantInfo = gameState.plantedSeeds[index]
+        if (plantInfo && plantInfo.isDead) {
+          showMessage('Planta morta! Use a enxada para remover.')
+        } else if (
+          plantInfo &&
+          plantInfo.currentStage ===
+            PLANT_GROWTH_CONFIG[plantInfo.seedType].stages.length - 1
+        ) {
+          showMessage(
+            'Planta madura! Clique sem ferramenta selecionada para colher.'
+          )
+        } else {
+          showMessage('Já há uma planta aqui!')
+        }
       }
     }
   }
@@ -204,6 +256,7 @@ function handleCellClick(index) {
   updateUI()
 }
 
+// Atualiza o visual de uma célula específica do grid
 function updateCellVisual(index) {
   const cell = document.querySelector(`[data-index="${index}"]`)
   const cellType = gameState.grid[index]
@@ -217,34 +270,46 @@ function updateCellVisual(index) {
 
   if (cellType === 'weed') {
     const img = document.createElement('img')
-    img.src = 'assets/images/Weed.png'
+    img.src = './assets/images/Weed.png'
     img.alt = 'Weed'
     img.className = 'cell-image'
     cell.appendChild(img)
   } else if (cellType === 'rock') {
     const img = document.createElement('img')
-    img.src = 'assets/images/Roock.png'
+    img.src = './assets/images/Roock.png'
     img.alt = 'Rock'
     img.className = 'cell-image'
     cell.appendChild(img)
-  } else if (cellType.startsWith('planted-')) {
+  } else if (cellType.startsWith('planted-') || cellType === 'dead-plant') {
     const img = document.createElement('img')
 
-    const plantInfo = gameState.plantedSeeds[index]
-    if (plantInfo) {
-      const config = PLANT_GROWTH_CONFIG[plantInfo.seedType]
-      const stageImage = config.stages[plantInfo.currentStage]
-      img.src = `assets/images/${stageImage}`
+    if (cellType === 'dead-plant') {
+      img.src = './assets/images/dead-plant.png'
+      img.alt = 'Dead Plant'
     } else {
-      img.src = 'assets/images/Seed.png'
+      const plantInfo = gameState.plantedSeeds[index]
+      if (plantInfo) {
+        if (plantInfo.isDead) {
+          img.src = './assets/images/dead-plant.png'
+          img.alt = 'Dead Plant'
+        } else {
+          const config = PLANT_GROWTH_CONFIG[plantInfo.seedType]
+          const stageImage = config.stages[plantInfo.currentStage]
+          img.src = `./assets/images/${stageImage}`
+          img.alt = 'Planted Seed'
+        }
+      } else {
+        img.src = './assets/images/Seed.png'
+        img.alt = 'Planted Seed'
+      }
     }
 
-    img.alt = 'Planted Seed'
     img.className = 'cell-image'
     cell.appendChild(img)
   }
 }
 
+// Exibe mensagens temporárias para o jogador
 function showMessage(text) {
   const messageDisplay = document.getElementById('message-display')
   messageDisplay.textContent = text
@@ -254,32 +319,35 @@ function showMessage(text) {
   }, 3000)
 }
 
-// Sistema de crescimento das plantas
+// Verifica e processa o crescimento das plantas baseado na rega
 function checkPlantGrowth() {
   const currentTime = Date.now()
   let plantsUpdated = false
 
-  // Verifica cada planta no jogo
   Object.keys(gameState.plantedSeeds).forEach((index) => {
     const plantInfo = gameState.plantedSeeds[index]
+
+    if (plantInfo.isDead) return
+
     const config = PLANT_GROWTH_CONFIG[plantInfo.seedType]
-
-    // Calcula quanto tempo passou desde o plantio
     const timePassed = currentTime - plantInfo.plantedAt
-
-    // Calcula qual estágio a planta deveria estar
     const expectedStage = Math.min(
       Math.floor(timePassed / config.stageTime),
       config.stages.length - 1
     )
 
     if (expectedStage > plantInfo.currentStage) {
-      plantInfo.currentStage = expectedStage
-      updateCellVisual(parseInt(index))
-      plantsUpdated = true
+      if (plantInfo.watered) {
+        plantInfo.currentStage = expectedStage
+        plantInfo.watered = false
+        updateCellVisual(parseInt(index))
+        plantsUpdated = true
 
-      if (expectedStage === config.stages.length - 1) {
-        showMessage(`${config.name} está pronta para colheita!`)
+        if (expectedStage === config.stages.length - 1) {
+          showMessage(`${config.name} está pronta para colheita!`)
+        } else {
+          showMessage(`${config.name} cresceu! Regue para continuar crescendo.`)
+        }
       }
     }
   })
@@ -287,21 +355,20 @@ function checkPlantGrowth() {
   return plantsUpdated
 }
 
-// Função que roda a cada segundo para verificar crescimento
+// Inicia o timer de crescimento das plantas
 function startPlantGrowthTimer() {
   setInterval(() => {
     checkPlantGrowth()
   }, 1000)
 }
 
-// Função para colher plantas maduras
+// Processa a colheita de plantas maduras
 function harvestPlant(index) {
   const plantInfo = gameState.plantedSeeds[index]
   if (!plantInfo) return
 
   const config = PLANT_GROWTH_CONFIG[plantInfo.seedType]
 
-  // Valores de venda baseados no tipo de semente
   const sellPrices = {
     seed1: 35,
     seed2: 50,
@@ -312,7 +379,6 @@ function harvestPlant(index) {
 
   gameState.currentMoney += sellPrice
 
-  // Remove a planta e volta para terra sem arar (empty)
   gameState.grid[index] = 'empty'
   delete gameState.plantedSeeds[index]
 
@@ -322,6 +388,7 @@ function harvestPlant(index) {
   showMessage(`${config.name} colhida! +$${sellPrice}`)
 }
 
+// Gerencia seleção e desseleção de sementes
 function selectSeed(seedType) {
   if (gameState.selectedSeed === seedType) {
     gameState.selectedSeed = null
@@ -334,6 +401,7 @@ function selectSeed(seedType) {
   updateSeedVisuals()
 }
 
+// Atualiza visual de seleção das sementes
 function updateSeedVisuals() {
   document.querySelectorAll('[data-seed]').forEach((seed) => {
     seed.classList.remove('selected')
@@ -349,6 +417,7 @@ function updateSeedVisuals() {
   }
 }
 
+// Gerencia seleção e desseleção de ferramentas
 function selectTool(toolType) {
   if (gameState.selectedTool === toolType) {
     gameState.selectedTool = null
@@ -366,6 +435,7 @@ function selectTool(toolType) {
   updateToolVisuals()
 }
 
+// Atualiza visual de seleção das ferramentas
 function updateToolVisuals() {
   document.querySelectorAll('[data-tool]').forEach((tool) => {
     tool.classList.remove('selected')
@@ -381,7 +451,7 @@ function updateToolVisuals() {
   }
 }
 
-//Funçao para dar update no hud do jogador. Dinheiro, energia e dias
+// Atualiza informações do HUD (dinheiro, energia, dia, inventário)
 function updateUI() {
   const energyDisplay = document.querySelector('#energy-display span')
   if (energyDisplay) {
@@ -403,7 +473,7 @@ function updateUI() {
   document.getElementById('count-seed3').textContent = gameState.inventory.seed3
 }
 
-//Função para comprar sementes na loja
+// Processa compra de sementes na loja
 function buySeed(seedType, cost, seedName) {
   if (gameState.currentMoney >= cost) {
     gameState.currentMoney -= cost
@@ -415,15 +485,38 @@ function buySeed(seedType, cost, seedName) {
   }
 }
 
-//Função para avançar um dia
+// Avança um dia, recupera energia e mata plantas não regadas
 function advanceDay() {
   gameState.currentDay++
   gameState.currentEnergy = 50
+
+  killUnwateredPlants()
 
   updateUI()
   showMessage(`Dia ${gameState.currentDay} começou! Energia recuperada.`)
 }
 
+// Mata plantas que não foram regadas quando o dia avança
+function killUnwateredPlants() {
+  let plantsKilled = 0
+
+  Object.keys(gameState.plantedSeeds).forEach((index) => {
+    const plantInfo = gameState.plantedSeeds[index]
+
+    if (!plantInfo.watered && !plantInfo.isDead && plantInfo.currentStage > 0) {
+      plantInfo.isDead = true
+      gameState.grid[index] = 'dead-plant'
+      updateCellVisual(parseInt(index))
+      plantsKilled++
+    }
+  })
+
+  if (plantsKilled > 0) {
+    showMessage(`${plantsKilled} planta(s) morreram por falta de água!`)
+  }
+}
+
+// Event listeners para modais da loja
 const seedShopBtn = document.getElementById('seed-shop-button')
 seedShopBtn.addEventListener('click', () => {
   const modal = document.getElementById('shop-modal')
@@ -436,10 +529,11 @@ seedShopCloseBtn.addEventListener('click', () => {
   modal.style.display = 'none'
 })
 
+// Inicialização do jogo e event listeners
 document.addEventListener('DOMContentLoaded', function () {
   createGrid()
   updateUI()
-  startPlantGrowthTimer() // Inicia o sistema de crescimento
+  startPlantGrowthTimer()
 
   document.querySelectorAll('[data-tool]').forEach((toolSlot) => {
     toolSlot.addEventListener('click', function () {
@@ -459,12 +553,10 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   })
 
-  // Event listeners para compra de sementes
   const buySeed1Btn = document.querySelector('.buy-seed1-button')
   const buySeed2Btn = document.querySelector('.buy-seed2-button')
   const buySeed3Btn = document.querySelector('.buy-seed3-button')
 
-  // Adicionando eventos de clique para os botões de compra de sementes
   buySeed1Btn.addEventListener('click', () => {
     buySeed('seed1', 20, 'Cenoura')
   })
@@ -477,7 +569,6 @@ document.addEventListener('DOMContentLoaded', function () {
     buySeed('seed3', 40, 'Tomate')
   })
 
-  // Event listener para avanço de dia
   const advanceDayBtn = document.getElementById('advance-day')
   advanceDayBtn.addEventListener('click', () => {
     advanceDay()
