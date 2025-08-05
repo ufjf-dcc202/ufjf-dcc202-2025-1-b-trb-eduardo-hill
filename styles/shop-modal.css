@@ -58,7 +58,7 @@
 .buy-seed3-button,
 .buy-battery-button {
   background: none;
-  border: 1px solid #007bff;
+  border: 1px solid black;
   cursor: pointer;
   padding: 5px;
   border-radius: 8px;

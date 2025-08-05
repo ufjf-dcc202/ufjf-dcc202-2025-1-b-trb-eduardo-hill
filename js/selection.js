@@ -9,9 +9,12 @@ function selectSeed(seedType) {
     showMessage('Semente desselecionada')
   } else {
     gameState.selectedSeed = seedType
+
+    gameState.selectedTool = null
     showMessage(`${SEED_NAMES[seedType]} selecionada`)
   }
   updateSeedVisuals()
+  updateToolVisuals()
 }
 
 // Atualiza visual de seleção das sementes
@@ -37,9 +40,12 @@ function selectTool(toolType) {
     showMessage('Ferramenta desselecionada')
   } else {
     gameState.selectedTool = toolType
+
+    gameState.selectedSeed = null
     showMessage(`${TOOL_NAMES[toolType]} selecionada`)
   }
   updateToolVisuals()
+  updateSeedVisuals()
 }
 
 // Atualiza visual de seleção das ferramentas

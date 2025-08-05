@@ -16,20 +16,13 @@
   object-fit: cover;
 }
 
-#tools-inventory img[src*='watering-can'] {
-  height: 60px;
-  width: 60px;
-}
-
+#tools-inventory img[src*='watering-can'],
 #tools-inventory img[src*='garden-scissors'] {
   height: 60px;
   width: 60px;
 }
 
-#tools-inventory-slot-1,
-#tools-inventory-slot-2,
-#tools-inventory-slot-3,
-#tools-inventory-slot-4 {
+#tools-inventory [id^='tools-inventory-slot-'] {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -42,20 +35,14 @@
 }
 
 /* Estilo para ferramenta selecionada */
-#tools-inventory-slot-1.selected,
-#tools-inventory-slot-2.selected,
-#tools-inventory-slot-3.selected,
-#tools-inventory-slot-4.selected {
+#tools-inventory [id^='tools-inventory-slot-'].selected {
   border-color: #007bff;
   background-color: rgba(0, 123, 255, 0.1);
   transform: scale(1.05);
 }
 
 /* Hover effect */
-#tools-inventory-slot-1:hover,
-#tools-inventory-slot-2:hover,
-#tools-inventory-slot-3:hover,
-#tools-inventory-slot-4:hover {
+#tools-inventory [id^='tools-inventory-slot-']:hover {
   border-color: #ccc;
   background-color: rgba(0, 0, 0, 0.05);
 }
