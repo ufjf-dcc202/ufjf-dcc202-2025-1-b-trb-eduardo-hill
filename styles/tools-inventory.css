@@ -11,9 +11,19 @@
 }
 
 #tools-inventory img {
-  height: 50px;
-  width: 50px;
+  height: 100px;
+  width: 100px;
   object-fit: cover;
+}
+
+#tools-inventory img[src*='watering-can'] {
+  height: 60px;
+  width: 60px;
+}
+
+#tools-inventory img[src*='garden-scissors'] {
+  height: 60px;
+  width: 60px;
 }
 
 #tools-inventory-slot-1,
