@@ -55,3 +55,8 @@ aside {
   font-size: small;
   font-family: 'Press Start 2P', 'Courier New';
 }
+
+#inventory-slot-1 img {
+  width: 100px;
+  height: 100px;
+}
