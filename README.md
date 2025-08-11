@@ -155,8 +155,8 @@ cd ufjf-dcc202-2025-1-b-trb-eduardo-hill
 ## 👥 **Desenvolvimento**
 
 **Desenvolvido por:** Eduardo Hill  
-**Disciplina:** DCC202 - Desenvolvimento Web
-**Professor** Igor Knop  
+**Disciplina:** DCC202 - Desenvolvimento Web  
+**Professor:** Igor Knop  
 **Instituição:** Universidade Federal de Juiz de Fora (UFJF)  
 **Período:** 2025.1
 
