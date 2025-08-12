@@ -2,6 +2,25 @@
 // SISTEMA DE FERRAMENTAS E INTERAÇÕES
 // ==========================================
 
+// Função auxiliar para verificar se célula tem planta morta
+function isDeadPlant(cellType, index) {
+  return (
+    cellType === 'dead-plant' ||
+    (cellType.startsWith('planted-') && gameState.plantedSeeds[index]?.isDead)
+  )
+}
+
+// Função auxiliar para verificar e consumir energia
+function tryConsumeEnergy(energyCost) {
+  if (GameState.hasEnergy(energyCost)) {
+    GameState.consumeEnergy(energyCost)
+    return true
+  } else {
+    showMessage(`Energia insuficiente! Precisa de ${energyCost} energia.`)
+    return false
+  }
+}
+
 // Gerencia cliques nas células do grid - ferramentas, plantio e colheita
 function handleCellClick(index) {
   const cellType = gameState.grid[index]
@@ -54,13 +73,10 @@ function handleToolAction(index, cellType) {
 function handlePickaxAction(index, cellType) {
   if (cellType === 'rock') {
     const energyCost = ENERGY_COSTS.pickax
-    if (GameState.hasEnergy(energyCost)) {
-      GameState.consumeEnergy(energyCost)
+    if (tryConsumeEnergy(energyCost)) {
       gameState.grid[index] = 'empty'
       updateCellVisual(index)
       showMessage('Pedra removida!')
-    } else {
-      showMessage(`Energia insuficiente! Precisa de ${energyCost} energia.`)
     }
   } else {
     showMessage('Use a picareta apenas em pedras!')
@@ -71,13 +87,10 @@ function handlePickaxAction(index, cellType) {
 function handleScissorsAction(index, cellType) {
   if (cellType === 'weed') {
     const energyCost = ENERGY_COSTS['garden-scissors']
-    if (GameState.hasEnergy(energyCost)) {
-      GameState.consumeEnergy(energyCost)
+    if (tryConsumeEnergy(energyCost)) {
       gameState.grid[index] = 'empty'
       updateCellVisual(index)
       showMessage('Erva daninha removida!')
-    } else {
-      showMessage(`Energia insuficiente! Precisa de ${energyCost} energia.`)
     }
   } else {
     showMessage('Use a tesoura apenas em ervas daninhas!')
@@ -88,27 +101,18 @@ function handleScissorsAction(index, cellType) {
 function handleHoeAction(index, cellType) {
   if (cellType === 'empty') {
     const energyCost = ENERGY_COSTS.hoe
-    if (GameState.hasEnergy(energyCost)) {
-      GameState.consumeEnergy(energyCost)
+    if (tryConsumeEnergy(energyCost)) {
       gameState.grid[index] = 'tilled'
       updateCellVisual(index)
       showMessage('Solo preparado para plantio!')
-    } else {
-      showMessage(`Energia insuficiente! Precisa de ${energyCost} energia.`)
     }
-  } else if (
-    cellType === 'dead-plant' ||
-    (cellType.startsWith('planted-') && gameState.plantedSeeds[index]?.isDead)
-  ) {
+  } else if (isDeadPlant(cellType, index)) {
     const energyCost = ENERGY_COSTS.hoeDeadPlant
-    if (GameState.hasEnergy(energyCost)) {
-      GameState.consumeEnergy(energyCost)
+    if (tryConsumeEnergy(energyCost)) {
       gameState.grid[index] = 'tilled'
       delete gameState.plantedSeeds[index]
       updateCellVisual(index)
       showMessage('Planta morta removida e solo preparado!')
-    } else {
-      showMessage(`Energia insuficiente! Precisa de ${energyCost} energia.`)
     }
   } else if (cellType === 'rock') {
     showMessage('Remova a pedra primeiro com a picareta!')
@@ -125,21 +129,19 @@ function handleHoeAction(index, cellType) {
 function handleWateringAction(index, cellType) {
   if (cellType === 'empty' || cellType === 'tilled') {
     showMessage('Nada para regar aqui!')
+  } else if (isDeadPlant(cellType, index)) {
+    showMessage('Planta morta! Use a enxada para remover.')
   } else if (cellType.startsWith('planted-')) {
     const plantInfo = gameState.plantedSeeds[index]
-    if (plantInfo && !plantInfo.isDead) {
+    if (plantInfo) {
       if (!plantInfo.watered) {
         waterPlant(index)
       } else {
         showMessage('Planta já foi regada neste estágio!')
       }
-    } else if (plantInfo && plantInfo.isDead) {
-      showMessage('Planta morta! Use a enxada para remover.')
     } else {
       showMessage('Não é possível regar aqui!')
     }
-  } else if (cellType === 'dead-plant') {
-    showMessage('Planta morta! Use a enxada para remover.')
   } else {
     showMessage('Não é possível regar aqui!')
   }
@@ -162,7 +164,7 @@ function handleSeedPlanting(index, cellType) {
 function handleHarvesting(index, cellType) {
   if (cellType.startsWith('planted-')) {
     const plantInfo = gameState.plantedSeeds[index]
-    if (plantInfo && plantInfo.isDead) {
+    if (isDeadPlant(cellType, index)) {
       showMessage('Planta morta! Use a enxada para remover.')
     } else if (
       plantInfo &&
@@ -173,7 +175,7 @@ function handleHarvesting(index, cellType) {
     } else {
       showMessage('Planta ainda não está madura para colheita!')
     }
-  } else if (cellType === 'dead-plant') {
+  } else if (isDeadPlant(cellType, index)) {
     showMessage('Planta morta! Use a enxada para remover.')
   } else {
     showMessage('Selecione uma ferramenta ou semente!')
