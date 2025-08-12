@@ -2,6 +2,40 @@
 // SISTEMA DE GRID E CÉLULAS
 // ==========================================
 
+// Cria e configura uma imagem para a célula baseada no tipo
+function createCellImage(cellType, index) {
+  const img = document.createElement('img')
+  img.className = 'cell-image'
+
+  if (cellType === 'weed') {
+    img.src = './assets/images/Weed.png'
+    img.alt = 'Weed'
+  } else if (cellType === 'rock') {
+    img.src = './assets/images/Roock.png'
+    img.alt = 'Rock'
+  } else if (
+    cellType === 'dead-plant' ||
+    (cellType.startsWith('planted-') && gameState.plantedSeeds[index]?.isDead)
+  ) {
+    // Plantas mortas (tanto o tipo 'dead-plant' quanto plantas com flag isDead)
+    img.src = './assets/images/dead-plant.png'
+    img.alt = 'Dead Plant'
+  } else if (cellType.startsWith('planted-')) {
+    const plantInfo = gameState.plantedSeeds[index]
+    if (plantInfo) {
+      const config = PLANT_GROWTH_CONFIG[plantInfo.seedType]
+      const stageImage = config.stages[plantInfo.currentStage]
+      img.src = `./assets/images/${stageImage}`
+      img.alt = 'Planted Seed'
+    } else {
+      img.src = './assets/images/Seed.png'
+      img.alt = 'Planted Seed'
+    }
+  }
+
+  return img
+}
+
 // Cria o grid visual 12x12 no DOM
 function createGrid() {
   const container = document.getElementById('game-grid')
@@ -12,17 +46,10 @@ function createGrid() {
     cell.className = `cell ${gameState.grid[i]}`
     cell.dataset.index = i
 
-    if (gameState.grid[i] === 'weed') {
-      const img = document.createElement('img')
-      img.src = './assets/images/Weed.png'
-      img.alt = 'Weed'
-      img.className = 'cell-image'
-      cell.appendChild(img)
-    } else if (gameState.grid[i] === 'rock') {
-      const img = document.createElement('img')
-      img.src = './assets/images/Roock.png'
-      img.alt = 'Rock'
-      img.className = 'cell-image'
+    // Adiciona imagem se necessário
+    const cellType = gameState.grid[i]
+    if (cellType !== 'empty' && cellType !== 'tilled') {
+      const img = createCellImage(cellType, i)
       cell.appendChild(img)
     }
 
@@ -41,48 +68,15 @@ function updateCellVisual(index) {
 
   cell.className = `cell ${cellType}`
 
+  // Remove imagem existente
   const existingImg = cell.querySelector('img')
   if (existingImg) {
     existingImg.remove()
   }
 
-  if (cellType === 'weed') {
-    const img = document.createElement('img')
-    img.src = './assets/images/Weed.png'
-    img.alt = 'Weed'
-    img.className = 'cell-image'
-    cell.appendChild(img)
-  } else if (cellType === 'rock') {
-    const img = document.createElement('img')
-    img.src = './assets/images/Roock.png'
-    img.alt = 'Rock'
-    img.className = 'cell-image'
-    cell.appendChild(img)
-  } else if (cellType.startsWith('planted-') || cellType === 'dead-plant') {
-    const img = document.createElement('img')
-
-    if (cellType === 'dead-plant') {
-      img.src = './assets/images/dead-plant.png'
-      img.alt = 'Dead Plant'
-    } else {
-      const plantInfo = gameState.plantedSeeds[index]
-      if (plantInfo) {
-        if (plantInfo.isDead) {
-          img.src = './assets/images/dead-plant.png'
-          img.alt = 'Dead Plant'
-        } else {
-          const config = PLANT_GROWTH_CONFIG[plantInfo.seedType]
-          const stageImage = config.stages[plantInfo.currentStage]
-          img.src = `./assets/images/${stageImage}`
-          img.alt = 'Planted Seed'
-        }
-      } else {
-        img.src = './assets/images/Seed.png'
-        img.alt = 'Planted Seed'
-      }
-    }
-
-    img.className = 'cell-image'
+  // Adiciona nova imagem se necessário
+  if (cellType !== 'empty' && cellType !== 'tilled') {
+    const img = createCellImage(cellType, index)
     cell.appendChild(img)
   }
 }
