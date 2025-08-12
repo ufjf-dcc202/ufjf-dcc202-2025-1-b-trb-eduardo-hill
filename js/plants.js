@@ -17,9 +17,7 @@ function checkPlantGrowth() {
   const currentTime = Date.now()
   let plantsUpdated = false
 
-  Object.keys(gameState.plantedSeeds).forEach((index) => {
-    const plantInfo = gameState.plantedSeeds[index]
-
+  Object.entries(gameState.plantedSeeds).forEach(([index, plantInfo]) => {
     if (plantInfo.isDead) return
 
     const config = PLANT_GROWTH_CONFIG[plantInfo.seedType]
@@ -75,13 +73,9 @@ function harvestPlant(index) {
   showMessage(`${config.name} colhida! +$${sellPrice}`)
 }
 
-// Planta uma semente na célula especificada
-function plantSeed(index, seedType) {
-  gameState.inventory[seedType]--
-  gameState.grid[index] = `planted-${seedType}`
-
-  // Registra o tempo de plantio
-  gameState.plantedSeeds[index] = {
+// Cria dados iniciais de uma planta plantada
+function createPlantData(seedType) {
+  return {
     seedType: seedType,
     plantedAt: Date.now(),
     currentStage: 0,
@@ -89,10 +83,18 @@ function plantSeed(index, seedType) {
     isDead: false,
     nextStageStartTime: Date.now(),
   }
+}
+
+// Planta uma semente na célula especificada
+function plantSeed(index, seedType) {
+  gameState.inventory[seedType]--
+  gameState.grid[index] = `planted-${seedType}`
+  gameState.plantedSeeds[index] = createPlantData(seedType)
 
   updateCellVisual(index)
   showMessage('Semente plantada!')
 
+  // Verifica se esgotou sementes
   if (gameState.inventory[seedType] === 0) {
     gameState.selectedSeed = null
     updateSeedVisuals()
@@ -116,9 +118,7 @@ function waterPlant(index) {
 function killUnwateredPlants() {
   let plantsKilled = 0
 
-  Object.keys(gameState.plantedSeeds).forEach((index) => {
-    const plantInfo = gameState.plantedSeeds[index]
-
+  Object.entries(gameState.plantedSeeds).forEach(([index, plantInfo]) => {
     if (!plantInfo.watered && !plantInfo.isDead && plantInfo.currentStage > 0) {
       plantInfo.isDead = true
       gameState.grid[index] = 'dead-plant'
