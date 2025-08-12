@@ -2,6 +2,19 @@
 // SISTEMA DE INTERFACE E ECONOMIA
 // ==========================================
 
+// Função auxiliar para realizar compras
+function processPurchase(cost, onSuccess, itemName) {
+  if (GameState.hasMoney(cost)) {
+    GameState.spendMoney(cost)
+    onSuccess()
+    updateUI()
+    return true
+  } else {
+    showMessage(`Dinheiro insuficiente! Precisa de $${cost}.`)
+    return false
+  }
+}
+
 // Atualiza informações do HUD (dinheiro, energia, dia, inventário)
 function updateUI() {
   const energyDisplay = document.querySelector('#energy-display span')
@@ -26,14 +39,10 @@ function updateUI() {
 
 // Processa compra de sementes na loja
 function buySeed(seedType, cost, seedName) {
-  if (GameState.hasMoney(cost)) {
-    GameState.spendMoney(cost)
+  processPurchase(cost, () => {
     gameState.inventory[seedType]++
-    updateUI()
     showMessage(`${seedName} comprada por $${cost}!`)
-  } else {
-    showMessage(`Dinheiro insuficiente! Precisa de $${cost}.`)
-  }
+  })
 }
 
 // Processa compra de bateria
@@ -41,54 +50,40 @@ function buyBattery() {
   const batteryCost = SPECIAL_ITEMS.battery.price
   const energyBoost = SPECIAL_ITEMS.battery.energyBoost
 
-  if (GameState.hasMoney(batteryCost)) {
-    GameState.spendMoney(batteryCost)
-
-    // Aumenta o limite máximo de energia permanentemente
+  processPurchase(batteryCost, () => {
     GameState.increaseMaxEnergy(energyBoost)
-
-    updateUI()
     showMessage(
       `Bateria comprada! Limite máximo de energia aumentado para ${gameState.maxEnergy}!`
     )
-  } else {
-    showMessage(`Dinheiro insuficiente! Precisa de $${batteryCost}.`)
-  }
+  })
 }
 
 // Configura event listeners para a loja
 function setupShopEventListeners() {
-  const seedShopBtn = document.getElementById('seed-shop-button')
-  seedShopBtn.addEventListener('click', () => {
-    const modal = document.getElementById('shop-modal')
+  const modal = document.getElementById('shop-modal')
+
+  // Modal abrir/fechar
+  document.getElementById('seed-shop-button').addEventListener('click', () => {
     modal.style.display = 'block'
   })
 
-  const seedShopCloseBtn = document.getElementById('close-shop-modal')
-  seedShopCloseBtn.addEventListener('click', () => {
-    const modal = document.getElementById('shop-modal')
+  document.getElementById('close-shop-modal').addEventListener('click', () => {
     modal.style.display = 'none'
   })
 
-  // Botões de compra de sementes
-  const buySeed1Btn = document.querySelector('.buy-seed1-button')
-  const buySeed2Btn = document.querySelector('.buy-seed2-button')
-  const buySeed3Btn = document.querySelector('.buy-seed3-button')
-  const buyBatteryBtn = document.querySelector('.buy-battery-button')
-
-  buySeed1Btn.addEventListener('click', () => {
-    buySeed('seed1', BUY_PRICES.seed1, SEED_NAMES.seed1)
+  // Botões de compra de sementes - usando loop para evitar repetição
+  const seedTypes = ['seed1', 'seed2', 'seed3']
+  seedTypes.forEach((seedType) => {
+    const buyBtn = document.querySelector(`.buy-${seedType}-button`)
+    buyBtn.addEventListener('click', () => {
+      buySeed(seedType, BUY_PRICES[seedType], SEED_NAMES[seedType])
+    })
   })
 
-  buySeed2Btn.addEventListener('click', () => {
-    buySeed('seed2', BUY_PRICES.seed2, SEED_NAMES.seed2)
-  })
-
-  buySeed3Btn.addEventListener('click', () => {
-    buySeed('seed3', BUY_PRICES.seed3, SEED_NAMES.seed3)
-  })
-
-  buyBatteryBtn.addEventListener('click', () => {
-    buyBattery()
-  })
+  // Botão de compra de bateria
+  document
+    .querySelector('.buy-battery-button')
+    .addEventListener('click', () => {
+      buyBattery()
+    })
 }
